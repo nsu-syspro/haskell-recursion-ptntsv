@@ -51,8 +51,12 @@ luhn = error "TODO: define luhn"
 -- []
 
 toDigits :: Integer -> [Int]
-toDigits = error "TODO: define toDigits"
-
+toDigits n = aux [] (fromIntegral n)
+    where
+      aux :: [Int] -> Int -> [Int]
+      aux acc n'
+        | n' <= 0 = acc
+        | otherwise = aux ((n' `mod` 10) : acc) (n' `div` 10)
 -----------------------------------
 --
 -- Produces list in reverse order to the given one
@@ -65,7 +69,10 @@ toDigits = error "TODO: define toDigits"
 -- [6,5,4,3]
 
 reverse :: [a] -> [a]
-reverse = error "TODO: define reverse"
+reverse xs = helper [] xs
+  where
+    helper acc [] = acc
+    helper acc (x':xs') = helper (x' : acc) xs'
 
 -----------------------------------
 --
