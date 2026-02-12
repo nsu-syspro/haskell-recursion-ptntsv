@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -Wall #-}
 {-# OPTIONS_GHC -Wno-unused-imports #-}
+
 -- The above pragma enables all warnings
 -- (except for unused imports from Task1)
 
@@ -12,7 +13,10 @@ import Prelude hiding (filter, foldl, foldr, head, init, last, length, map, read
 -- You can reuse already implemented functions from Task1
 -- by listing them in this import clause
 -- NOTE: only listed functions are imported, everything else remains hidden
-import Task1 (map, reverse, sum)
+import Task1 (doubleEveryOther, map, normalize10, normalizeN, reverse, sum, toDigits)
+
+import Data.Char (isDigit, ord)
+import Data.List (init, last, tail)
 
 -----------------------------------
 --
@@ -23,9 +27,10 @@ import Task1 (map, reverse, sum)
 --
 -- >>> luhnModN 10 id [3,4,5,6]
 -- 1
-
 luhnModN :: Int -> (a -> Int) -> [a] -> Int
-luhnModN = error "TODO: define luhnModN"
+luhnModN n f xs = (n - (s `mod` n)) `mod` n
+  where
+    s = sum (map (normalizeN n) (doubleEveryOther (reverse (map f xs))))
 
 -----------------------------------
 --
@@ -36,8 +41,11 @@ luhnModN = error "TODO: define luhnModN"
 -- >>> luhnDec [3,4,5,6]
 -- 1
 
+-- luhnN :: Int -> (a -> Int) -> [a] -> Int
+-- luhnN = luhnModN
+
 luhnDec :: [Int] -> Int
-luhnDec = error "TODO: define luhnDec"
+luhnDec = luhnModN 10 id
 
 -----------------------------------
 --
@@ -49,7 +57,7 @@ luhnDec = error "TODO: define luhnDec"
 -- 15
 
 luhnHex :: [Char] -> Int
-luhnHex = error "TODO: define luhnHex"
+luhnHex = luhnModN 16 digitToInt
 
 -----------------------------------
 --
@@ -65,7 +73,13 @@ luhnHex = error "TODO: define luhnHex"
 -- [10,11,12,13,14,15]
 
 digitToInt :: Char -> Int
-digitToInt = error "TODO: define digitToInt"
+digitToInt c = ord c - offset
+  where
+    offset
+      | isDigit c = 48
+      | 'a' <= c && c <= 'f' = 87
+      | 'A' <= c && c <= 'F' = 55
+      | otherwise = 0
 
 -----------------------------------
 --
@@ -82,7 +96,7 @@ digitToInt = error "TODO: define digitToInt"
 -- False
 
 validateDec :: Integer -> Bool
-validateDec = error "TODO: define validateDec"
+validateDec = validate 10 toDigits id
 
 -----------------------------------
 --
@@ -99,4 +113,9 @@ validateDec = error "TODO: define validateDec"
 -- False
 
 validateHex :: [Char] -> Bool
-validateHex = error "TODO: define validateHex"
+validateHex = validate 16 id digitToInt
+
+validate :: Int -> (a -> [b]) -> (b -> Int) -> a -> Bool
+validate n f g x = luhnModN n g (init bs) == g (last bs)
+  where
+    bs = f x

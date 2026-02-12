@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wall #-}
+
 -- The above pragma enables all warnings
 
 module Task1 where
@@ -22,7 +23,9 @@ import Prelude hiding (filter, foldl, foldr, head, init, last, length, map, read
 -- False
 
 validate :: Integer -> Bool
-validate = error "TODO: define validate"
+validate n = (luhn . toDigits) (n `div` 10) == check
+  where
+    check = fromIntegral (n `mod` 10)
 
 -----------------------------------
 --
@@ -34,7 +37,9 @@ validate = error "TODO: define validate"
 -- 1
 
 luhn :: [Int] -> Int
-luhn = error "TODO: define luhn"
+luhn xs = (10 - (s `mod` 10)) `mod` 10
+  where
+    s = sum (map normalize10 (doubleEveryOther (reverse xs)))
 
 -----------------------------------
 --
@@ -52,11 +57,12 @@ luhn = error "TODO: define luhn"
 
 toDigits :: Integer -> [Int]
 toDigits n = aux [] (fromIntegral n)
-    where
-      aux :: [Int] -> Int -> [Int]
-      aux acc n'
-        | n' <= 0 = acc
-        | otherwise = aux ((n' `mod` 10) : acc) (n' `div` 10)
+  where
+    aux :: [Int] -> Int -> [Int]
+    aux acc n'
+      | n' <= 0 = acc
+      | otherwise = aux ((n' `mod` 10) : acc) (n' `div` 10)
+
 -----------------------------------
 --
 -- Produces list in reverse order to the given one
@@ -69,10 +75,10 @@ toDigits n = aux [] (fromIntegral n)
 -- [6,5,4,3]
 
 reverse :: [a] -> [a]
-reverse xs = helper [] xs
+reverse = aux []
   where
-    helper acc [] = acc
-    helper acc (x':xs') = helper (x' : acc) xs'
+    aux acc [] = acc
+    aux acc (x' : xs') = aux (x' : acc) xs'
 
 -----------------------------------
 --
@@ -84,7 +90,9 @@ reverse xs = helper [] xs
 -- [12,5,8,3]
 
 doubleEveryOther :: [Int] -> [Int]
-doubleEveryOther = error "TODO: define doubleEveryOther"
+doubleEveryOther [] = []
+doubleEveryOther [x] = [x * 2]
+doubleEveryOther (x : y : xs) = x * 2 : y : doubleEveryOther xs
 
 -----------------------------------
 --
@@ -100,8 +108,12 @@ doubleEveryOther = error "TODO: define doubleEveryOther"
 -- >>> normalize 1
 -- 1
 
-normalize :: Int -> Int
-normalize = error "TODO: define normalize"
+normalizeN :: Int -> Int -> Int
+normalizeN n x | x >= n = x - (n - 1)
+normalizeN _ x = x
+
+normalize10 :: Int -> Int
+normalize10 = normalizeN 10
 
 -----------------------------------
 --
@@ -114,7 +126,8 @@ normalize = error "TODO: define normalize"
 -- [2,4,6,8]
 
 map :: (a -> b) -> [a] -> [b]
-map = error "TODO: define map"
+map _ [] = []
+map f (x : xs) = f x : map f xs
 
 -----------------------------------
 --
@@ -128,4 +141,8 @@ map = error "TODO: define map"
 -- 0
 
 sum :: [Int] -> Int
-sum = error "TODO: define sum"
+sum = aux 0
+  where
+    aux :: Int -> [Int] -> Int
+    aux acc [] = acc
+    aux acc (x : xs) = aux (acc + x) xs
