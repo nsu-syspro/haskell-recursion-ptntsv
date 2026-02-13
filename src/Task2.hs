@@ -8,15 +8,14 @@ module Task2 where
 
 -- Explicit import of Prelude to hide functions
 -- that are not supposed to be used in this assignment
-import Prelude hiding (filter, foldl, foldr, head, init, last, length, map, read, reverse, show, sum, tail)
 
 -- You can reuse already implemented functions from Task1
 -- by listing them in this import clause
 -- NOTE: only listed functions are imported, everything else remains hidden
-import Task1 (doubleEveryOther, map, normalize10, normalizeN, reverse, sum, toDigits)
 
 import Data.Char (isDigit, ord)
-import Data.List (init, last, tail)
+import Task1 (doubleEveryOther, map, normalize10, normalizeN, reverse, sum, toDigits)
+import Prelude hiding (filter, foldl, foldr, head, init, last, length, map, read, reverse, show, sum, tail)
 
 -----------------------------------
 --
@@ -119,3 +118,13 @@ validate :: Int -> (a -> [b]) -> (b -> Int) -> a -> Bool
 validate n f g x = luhnModN n g (init bs) == g (last bs)
   where
     bs = f x
+
+init :: [a] -> [a]
+init [] = undefined
+init [_] = []
+init (x : xs) = x : init xs
+
+last :: [a] -> a
+last [] = undefined
+last [x] = x
+last (_ : xs) = last xs
