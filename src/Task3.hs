@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wall #-}
+
 -- Note: the above pragma enables all warnings
 
 module Task3 where
@@ -7,6 +8,7 @@ module Task3 where
 -- Helper type synonyms
 
 type Peg = String
+
 type Move = (Peg, Peg)
 
 -----------------------
@@ -17,5 +19,5 @@ type Move = (Peg, Peg)
 -- [("a","c"),("a","b"),("c","b")]
 
 hanoi :: Int -> Peg -> Peg -> Peg -> [Move]
-hanoi = error "TODO: define hanoi"
-
+hanoi 0 _ _ _ = []
+hanoi n x y z = hanoi (n - 1) x z y ++ [(x, y)] ++ hanoi (n - 1) z y x
